@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"allowSyntheticDefaultImports": true,
+		"moduleResolution": "node",
+		"outDir": "./dist/",
+		"noImplicitAny": true,
+		"module": "es6",
+		"target": "es5",
+		"jsx": "react",
+	},
+	"include": ["./src/**/*", "node_modules/@types"],
+}
