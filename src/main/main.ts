@@ -1,8 +1,8 @@
 import path from 'node:path';
-
 import { app, BrowserWindow, Menu, ipcMain, shell } from 'electron';
 import os from 'os';
 import fs from 'fs';
+import { setupProcessListeners } from './utilities/listRunningDesktopApps';
 
 const isDev = process.env.NODE_ENV !== 'production';
 const isMac = process.platform === 'darwin';
@@ -16,8 +16,9 @@ const createMainWindow = (): void => {
 		width: isDev ? 1000 : 500,
 		height: 600,
 		webPreferences: {
-			nodeIntegration: false,
 			contextIsolation: true,
+			nodeIntegration: false,
+			preload: path.join(__dirname, '../dist/preload.ts'),
 		},
 	});
 
@@ -43,6 +44,9 @@ function createAboutWindow(): void {
 
 app.whenReady().then(() => {
 	createMainWindow();
+
+	const runningApps = setupProcessListeners();
+	console.log(runningApps);
 
 	// implement menu
 	const mainMenu = Menu.buildFromTemplate(menu);

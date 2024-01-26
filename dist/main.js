@@ -2,6 +2,36 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/main/utilities/listRunningDesktopApps.ts":
+/*!******************************************************!*\
+  !*** ./src/main/utilities/listRunningDesktopApps.ts ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   setupProcessListeners: () => (/* binding */ setupProcessListeners)
+/* harmony export */ });
+/* harmony import */ var electron__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! electron */ "electron");
+/* harmony import */ var electron__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(electron__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var ps_node__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ps-node */ "ps-node");
+/* harmony import */ var ps_node__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(ps_node__WEBPACK_IMPORTED_MODULE_1__);
+
+
+var setupProcessListeners = function () {
+    electron__WEBPACK_IMPORTED_MODULE_0__.ipcMain.on('request-running-apps', function (event) {
+        ps_node__WEBPACK_IMPORTED_MODULE_1___default().lookup({}, function (error, resultList) {
+            if (error) {
+                console.log('Error from setupProcessListeners function: ', error);
+            }
+            event.reply('response-running-apps', resultList);
+        });
+    });
+};
+
+
+/***/ }),
+
 /***/ "electron":
 /*!***************************!*\
   !*** external "electron" ***!
@@ -9,6 +39,16 @@
 /***/ ((module) => {
 
 module.exports = require("electron");
+
+/***/ }),
+
+/***/ "ps-node":
+/*!**************************!*\
+  !*** external "ps-node" ***!
+  \**************************/
+/***/ ((module) => {
+
+module.exports = require("ps-node");
 
 /***/ }),
 
@@ -101,6 +141,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var node_path__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(node_path__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var electron__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! electron */ "electron");
 /* harmony import */ var electron__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(electron__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _utilities_listRunningDesktopApps__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utilities/listRunningDesktopApps */ "./src/main/utilities/listRunningDesktopApps.ts");
 var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from, pack) {
     if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
         if (ar || !(i in from)) {
@@ -110,6 +151,7 @@ var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
+
 
 
 var isDev = "development" !== 'production';
@@ -122,8 +164,9 @@ var createMainWindow = function () {
         width: isDev ? 1000 : 500,
         height: 600,
         webPreferences: {
-            nodeIntegration: false,
             contextIsolation: true,
+            nodeIntegration: false,
+            preload: node_path__WEBPACK_IMPORTED_MODULE_0___default().join(__dirname, '../dist/preload.ts'),
         },
     });
     // open devTools if we are in dev environment
@@ -144,6 +187,8 @@ function createAboutWindow() {
 }
 electron__WEBPACK_IMPORTED_MODULE_1__.app.whenReady().then(function () {
     createMainWindow();
+    var runningApps = (0,_utilities_listRunningDesktopApps__WEBPACK_IMPORTED_MODULE_2__.setupProcessListeners)();
+    console.log(runningApps);
     // implement menu
     var mainMenu = electron__WEBPACK_IMPORTED_MODULE_1__.Menu.buildFromTemplate(menu);
     electron__WEBPACK_IMPORTED_MODULE_1__.Menu.setApplicationMenu(mainMenu);
